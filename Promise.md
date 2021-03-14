@@ -291,16 +291,17 @@ class Promise{
 
     static all(promises){
         return new Promise((resolve, reject) => {
-            let allSuccess = true
+            let successCount = 0
             let successResults = []
+            let length = promises.length
             promises.forEach((item, index) =>{
                 item.then(value => {
+                    successCount++
                     successResults[index] = value
-                    if (index === promises.length - 1 && allSuccess){
+                    if (successCount === length){
                         resolve(successResults)
                     }
                 }, reason => {
-                    allSuccess = false
                     reject(reason)
                 })
             })
