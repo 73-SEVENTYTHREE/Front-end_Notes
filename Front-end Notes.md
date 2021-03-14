@@ -2,6 +2,27 @@
 
 ## JavaScript
 
+### 浅拷贝和深拷贝
+
+```js
+function deepObj(obj){
+    let newObj = Array.isArray(obj) ? [] : {}
+    if (obj && typeof obj === 'object'){
+        for (let key in obj){
+            if (obj.hasOwnProperty(key)){
+                if (key && typeof obj[key] === 'object') newObj[key] = deepObj(obj[key])
+                else newObj[key] = obj[key]
+            }
+        }
+    }
+    return newObj
+}
+```
+
+
+
+---
+
 ### 执行上下文
 
 1. 定义：当前 JavaScript 代码被解析和执行时所在环境的抽象概念， JavaScript 中运行任何的代码都是在执行上下文中运行。
@@ -116,6 +137,8 @@
 
      
 
+---
+
 ### 原型链
 
 ![](./assets/原型链.png)
@@ -125,11 +148,50 @@
 2. 当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止。
 3. 当获取 person.constructor 时，其实 person 中并没有 constructor 属性,当不能读取到constructor 属性时，会从 person 的原型也就是 Person.prototype 中读取，正好原型中有该属性。
 
+---
+
 ### `call()`&`apply()`
 
 1. 作用：能够**改变函数执行时的上下文**，将一个对象的方法交给另一个对象来执行，并且是立即执行的。
 
-2.  用法：
+2. 实现
+
+   - `call`
+
+     ```js
+     Function.prototype.mycall = function (obj){
+         obj = obj || window //obj为null时，是window调用
+         obj.fn = this //给对象上添加该方法
+         if (arguments.length === 1) obj.fn()//没有多余的参数就直接调用
+         else{
+             let [o, ...args] = [...arguments]//将第二至最后一个参数赋值给args
+             eval('obj.fn(' + args + ')')//执行函数本身
+         }
+         delete obj.fn//执行完函数之后就删除该方法
+     }
+     ```
+
+   - `apply`
+
+     ```js
+     Function.prototype.myapply = function (obj){
+         obj = obj || window
+         obj.fn = this
+         if (arguments.length === 1) obj.fn()
+         else{
+           	if (!(arguments[1] instanceof Array)){
+                 throw '参数形式应为数组！'
+             }
+             let args = [...arguments[1]]
+             eval('obj.fn(' + args + ')')
+         }
+         delete obj.fn
+     }
+     ```
+
+     
+
+3. 用法：
 
    - `Function.call(obj,[param1[,param2[,…[,paramN]]]])`
 
@@ -180,7 +242,7 @@
        - 类数组 arrayLike 可以通过角标进行调用，具有length属性，同时也可以通过 for 循环进行遍历
        - **类数组无法使用 forEach、splice、push 等数组原型链上的方法**，毕竟它不是真正的数组
 
-3. 用途
+4. 用途
 
    - `call`
 
@@ -217,7 +279,7 @@
 
      - 数组合并
 
-4. `bind()`
+5. `bind()`
 
    - `bind()` 方法创建一个新的函数，在调用时设置 `this `关键字为提供的值。并在调用新函数时，将给定参数列表作为原函数的参数序列的前若干项。
 
@@ -234,10 +296,12 @@
      add.bind(sub, 5, 3)(); // 调用后，返回 8
      ```
 
-5. 总结
+6. 总结
 
    - call 和 apply 的主要作用，是改变对象的执行上下文，并且是**立即执行**的。它们在**参数**上的写法略有区别。
    - bind 也能改变对象的执行上下文，它与 call 和 apply 不同的是，**返回值是一个函数**，并且需要**稍后再调用**一下，才会执行。
+
+---
 
 ### 继承
 
@@ -410,6 +474,8 @@
 
 6. 寄生组合式继承（**见上方组合式继承缺点解决方案**）
 
+---
+
 ### 作用域
 
 1. **作用域链**：当查找变量的时候，会**先从当前上下文**的变量对象中查找，如果没有找到，就会从**父级**(词法层面上的父级)执行上下文的变量对象中查找，一直找到**全局上下文**的变量对象，也就是全局对象。这样由多个执行上下文的变量对象构成的链表就叫做作用域链。
@@ -543,6 +609,8 @@
    ];
    ```
 
+---
+
 ### 闭包
 
 1. 理论上的闭包：闭包 = 函数 + 函数能够访问的自由变量(面试问的闭包应该不是这个...)
@@ -655,7 +723,10 @@
      - 尽量避免使用闭包
      - 及时释放包含闭包的函数对象
 
+---
+
 ### 变量提升&函数提升
+
 1. 变量提升
 
      ```js
@@ -706,6 +777,8 @@
      }
      var a = 1;
      ```
+
+---
 
 ### `this`的指向
 
@@ -781,6 +854,8 @@
    console.log(a.user); //user
    ```
 
+---
+
 ### 立即执行函数
 
 1. 函数声明式和函数表达式
@@ -851,11 +926,19 @@
 
     - 当函数通过他们的名字被调用时，参数会被传递；而当函数表达式被立即调用时，参数也会被传递。一个立即调用的函数表达式可以用来锁定值并且有效的保存此时的状态，因为任何定义在一个函数内的函数都可以使用外面函数传递进来的参数和变量(这种关系被叫做闭包)。
 
+---
+
 ### `instanceof`&`typeof`
 
 1. `typeof` 一般被用于判断一个变量的类型，我们可以利用 `typeof` 来判断`number`, `string`, `object`, `boolean`, `function`, `undefined`, `symbol` 这七种类型。
 
-2. `typeof`原理：
+2. `Symbol`
+
+   - `symbol`不会被`Object.keys()`和`for...in`枚举，所以可以用来定义不需要对外操作和访问的属性
+   - 对象转换成`JSON`字符串时也会被排除在外
+   - 可以用`Symbol`来替代常量
+
+3. `typeof`原理：
 
    - js 在底层存储变量的时候，会在变量的机器码的低位1-3位存储其类型信息
      - 000：对象
@@ -863,11 +946,11 @@
      - 100：字符串
      - 110：布尔
      - 1：整数
-   - null储存方式是所有机器码全为0
-   - undefined的储存方式是-2<sup>30</sup>整数表示
+   - `null`储存方式是所有机器码全为0
+   - `undefined`的储存方式是-2<sup>30</sup>整数表示
    - 所以，`typeof` 在判断 `null` 的时候就出现问题了，由于 `null` 的所有机器码均为0，因此直接被当做了对象来看待。
 
-3. `instanceof`原理
+4. `instanceof`原理
 
    - `instanceof` 主要的作用就是判断一个实例是否属于某种类型或者判断一个实例是否是其父类型或者祖先类型的实例。
 
@@ -894,7 +977,12 @@
      ```js
      function new_instance_of(leftVaule, rightVaule) 
      { 
-       if (typeof leftValue !== 'object' || leftValue === null) return false;
+       //undefined、null和基本数据类型先排除
+       if (leftValue === undefined || null) return false
+       if (typeof leftValue !== 'object' && typeof leftValue !== 'function') 
+       {
+         return false
+       }
        let rightProto = rightVaule.prototype; // 取右表达式的 prototype 值
        leftVaule = leftVaule.__proto__; // 取左表达式的__proto__值 
        while (true) 
@@ -906,7 +994,651 @@
      }
      ```
 
+---
+
 ### `bind()`实现
 
+```js
+Function.prototype.bind2 = function (context) {
+    let self = this//保存调用的函数
+    let args = Array.prototype.slice.call(arguments, 1)//获取传入的参数
+    let fNOP = function () {}
+    let fBound = function (){
+        let bindArgs = Array.prototype.slice.call(arguments, 0)//获取调用fBoud传入的参数
+        // 当作为构造函数时，this 指向实例，此时结果为 true，将绑定函数的 this 指向该实例，可以让实例获得来自绑定函数的值
+        // 以上面的是 demo 为例，如果改成 `this instanceof fBound ? null : context`，实例只是一个空对象，将 null 改成 this ，实例会具有 habit 属性
+        // 当作为普通函数时，this 指向 window，此时结果为 false，将绑定函数的 this 指向 context
+        return self.apply(this instanceof fNOP ? this:context, args.concat(bindArgs))
+    }
+    //间接继承原函数的原型对象，用于判断this的指向
+    fNOP.prototype = this.prototype
+    fBound.prototype = new fNOP()
+    return fBound
+}
+```
 
+---
+
+### 内存溢出&内存泄漏
+
+1. 内存溢出
+   - 程序运行时出现的错误
+   - 当程序需要的内存大于剩余的内存时，就抛出内存溢出的错误
+2. 内存泄漏
+   - 占用的内存没有及时释放
+   - 内存泄漏积累到一定程度就会产生内存溢出
+   - 避免内存泄漏：
+     - 尽量少创建全局变量
+     - 及时清除定时器
+     - 尽量少使用闭包
+     - 清除对`DOM`引用
+     - 使用`ES6`中的`WeakMap`和`WeakSet`(弱引用，比如变量`a`和一个`WeakMap`对象的键名都指向一个对象，只要将`a`赋值为`null`，这个被指向的对象就会被回收，不会在乎那个键名的引用)
+
+---
+
+### 函数的柯里化
+
+1. 柯里化，是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果的新函数的技术。
+
+2. 面试题：
+
+   ```js
+   //实现将add(1,2,3,4…n)转化为add(1)(2)(3)(4)…(n)等
+   
+   let judge
+   const curry = fn => judge = (...args) => args.length === fn.length ? fn (...args) : arg => judge (...args, arg);
+   let add = curry((a, b, c) => a + b +c)
+   console.log(add(1, 2)(3))//6
+   console.log(add(1)(2)(3))//6
+   console.log(add(1, 2, 3))//6
+   ```
+
+   ```js
+   // 实现一个add方法，使计算结果能够满足如下预期：
+   //add(1)(2)(3) = 6;
+   //add(1, 2, 3)(4) = 10;
+   //add(1)(2)(3)(4)(5) = 15;
+   
+   function add() {
+       // 第一次执行时，定义一个数组专门用来存储所有的参数
+       const args = Array.prototype.slice.call (arguments);
+       // 在内部声明一个函数，利用闭包的特性保存_args并持续收集所有的参数值
+       let adder = function () {
+           args.push (...arguments);
+           return adder;
+       };
+     	//toString在被console.log()输出时会被调用，所以重写该函数来计算和
+       adder.toString = function () {
+           let sum = 0
+           args.forEach(item => sum += item)
+           return sum.toString()
+       }
+       return adder;
+   }
+   console.log(add(1, 2, 3)(4)(5) == 15)//true
+   ```
+
+---
+
+### V8引擎的垃圾回收
+
+1. V8引擎在`64`位系统下最多只能使用约`1.4GB`的内存，在`32`位系统下最多只能使用约`0.7GB`的内存，在这样的限制下，必然会导致在node中无法直接操作大内存对象，比如将一个`2GB`大小的文件全部读入内存进行字符串分析处理。
+
+   原因：
+
+   - JS是单线程的
+   - 垃圾回收机制：内存越大，垃圾回收时间也就越长，主线程的阻塞时间就会变长
+
+2. 在`node`端是可以手动配置内存的：`node --v8-options`
+
+   ```shell
+   // 设置新生代内存中单个半空间的内存最小值，单位MB
+   node --min-semi-space-size=1024 xxx.js
+   
+   // 设置新生代内存中单个半空间的内存最大值，单位MB
+   node --max-semi-space-size=1024 xxx.js
+   
+   // 设置老生代内存最大值，单位MB
+   node --max-old-space-size=2048 xxx.js
+   
+   //查看当前node进程所占用的实际内存大小
+   process.memoryUsage()
+   ```
+
+3. 回收策略：V8的垃圾回收策略主要是基于`分代式垃圾回收机制`，其根据**对象的存活时间**将内存的垃圾回收进行不同的分代，然后对不同的分代采用不同的垃圾回收算法
+
+   - 内存结构：
+
+     `新生代(new_space)`：大多数的对象开始都会被分配在这里，这个区域相对较小但是垃圾回收特别频繁，该区域被分为两半，一半用来分配内存，另一半用于在垃圾回收时将需要保留的对象复制过来。
+
+     `老生代(old_space)`：新生代中的对象在存活一段时间后就会被转移到老生代内存区，相对于新生代该内存区域的垃圾回收频率较低。老生代又分为`老生代指针区`和`老生代数据区`，前者包含大多数可能存在指向其他对象的指针的对象，后者只保存原始数据对象，这些对象没有指向其他对象的指针。
+
+     `大对象区(large_object_space)`：存放体积超越其他区域大小的对象，每个对象都会有自己的内存，垃圾回收不会移动大对象区。
+
+     `代码区(code_space)`：代码对象，会被分配在这里，唯一拥有执行权限的内存区域。
+
+     `map区(map_space)`：存放Cell和Map，每个区域都是存放相同大小的元素，结构简单(这里没有做具体深入的了解，有清楚的小伙伴儿还麻烦解释下)
+
+     ![](./assets/v8内存结构.jpg)
+
+   - `新生代`
+
+     新生代内存是由两个`semispace(半空间)`构成的，内存最大值在`64`位系统和`32`位系统上分别为`32MB`和`16MB`，在新生代的垃圾回收过程中主要采用了`Scavenge`算法。
+
+     **缺点**：`Scavenge`算法的垃圾回收过程主要就是将存活对象在`From`空间和`To`空间之间进行复制，同时完成两个空间之间的角色互换，浪费了一半的内存用于复制。
+
+     **流程图**：
+
+     * 假设我们在`From`空间中分配了三个对象A、B、C
+
+       ![](assets/scavenge_1.png)
+
+     * 当程序主线程任务第一次执行完毕后进入垃圾回收时，发现对象A已经没有其他引用，则表示可以对其进行回收
+
+       ![](assets/scavenge_p2.png)
+
+     * 对象B和对象C此时依旧处于活跃状态，因此会被复制到`To`空间中进行保存
+
+       ![](assets/scavenge_p3.png)
+
+     * 接下来将`From`空间中的所有非存活对象全部清除
+
+       ![](assets/scavenge_p4.png)
+
+     * 此时`From`空间中的内存已经清空，开始和`To`空间完成一次角色互换
+
+       ![](assets/scavenge_p5.png)
+
+     * 当程序主线程在执行第二个任务时，在`From`空间中分配了一个新对象D
+
+       ![](assets/scavenge_p6.png)
+
+     * 任务执行完毕后再次进入垃圾回收，发现对象D已经没有其他引用，表示可以对其进行回收
+
+       ![](assets/scavenge_p7.png)
+
+     * 对象B和对象C此时依旧处于活跃状态，再次被复制到`To`空间中进行保存
+
+       ![](assets/scavenge_p8.png)
+
+     * 再次将`From`空间中的所有非存活对象全部清除
+
+       ![](assets/scavenge_p9.png)
+
+     * `From`空间和`To`空间继续完成一次角色互换
+
+       ![](assets/scavenge_p10.png)
+
+4. 对象晋升
+
+   当一个对象在经过多次复制之后依旧存活，那么它会被认为是一个生命周期较长的对象，在下一次进行垃圾回收时，该对象会被直接转移到老生代中，这种对象从新生代转移到老生代的过程我们称之为`晋升`。
+   对象晋升的条件主要有以下两个：
+
+   * 对象是否经历过一次`Scavenge`算法
+   * `To`空间的内存占比是否已经超过`25%`(`25%`的内存限制是因为`To`空间在经历过一次`Scavenge`算法后会和`From`空间完成角色互换，会变为`From`空间，后续的内存分配都是在`From`空间中进行的，如果内存使用过高甚至溢出，则会影响后续对象的分配)
+
+   ![](assets/对象晋升_p1.png)
+
+   ![](assets/对象晋升_p2.png)
+
+5. `老生代`
+
+   2012年之前浏览器使用的是`引用计数`的算法(没有引用指向的对象，就会被回收)，但是这种算法无法解决循环引用(`a.b1 = b; b.a1 = a`)的问题，所以后来采用新的算法`Mark-Sweep(标记清除)`和`Mark-Compact(标记整理)`来进行管理。
+
+   - `Mark_Sweep`（标记清楚）
+
+     分为`标记`和`清除`两个阶段，在标记阶段会遍历堆中的所有对象，然后标记活着的对象，在清除阶段中，会将死亡的对象进行清除。`Mark-Sweep`算法主要是通过判断某个对象是否可以被访问到，从而知道该对象是否应该被回收，具体步骤如下：
+
+     * 垃圾回收器会在内部构建一个`根列表`，用于从根节点出发去寻找那些可以被访问到的变量。比如在JavaScript中，`window`全局对象可以看成一个根节点。
+     * 然后，垃圾回收器从所有根节点出发，遍历其可以访问到的子节点，并将其标记为活动的，根节点不能到达的地方即为非活动的，将会被视为垃圾。
+     * 最后，垃圾回收器将会释放所有非活动的内存块，并将其归还给操作系统。
+
+     > 以下几种情况都可以作为根节点：
+     >
+     > 1. 全局对象
+     > 2. 本地函数的局部变量和参数
+     > 3. 当前嵌套调用链上的其他函数的变量和参数
+
+     ![](assets/Mark-Sweep.gif)
+
+   - `Mark-Compact`（标记整理）
+
+     `Mark-Sweep`算法有一个很大的缺点：清理出来的内存是不连续的，出现内存碎片问题。
+
+     `Mark-Compact`算法解决了内存碎片问题。
+
+     问题：每次都遍历一遍堆内存的话，主线程的阻塞时间会很长，造成明显的卡顿。为了解决这个问题，又引入了增量标记的算法，即先遍历一部分内存，然后暂停，让主线程的任务执行，主线程的任务执行完成之后再从上一次遍历到的地方继续遍历。
+
+     **流程图**
+
+     * 假设在老生代中有A、B、C、D四个对象
+
+       ![](assets/老生代_p1.png)
+
+     * 在垃圾回收的`标记`阶段，将对象A和对象C标记为活动的
+
+       ![](assets/老生代_p2.png)
+
+     * 在垃圾回收的`整理`阶段，将活动的对象往堆内存的一端移动
+
+       ![](assets/老生代_p3.png)
+
+     * 在垃圾回收的`清除`阶段，将活动对象左侧的内存全部回收
+
+       ![](assets/老生代_p4.png)
+
+       
+
+---
+
+### 浮点数精度
+
+> 0.1 + 0.2 ！== 0.3
+>
+> 0.1 和 0.2 在计算机中以二进制存储时是无限循环的，而javascript中浮点数是双精度类型的，也就是64位，再统一化格式，其中1位表示符号，11位存阶码，剩下的52位存小数部分。所以第53位开始就四舍五入被舍弃掉，导致两个二进制数相加就丢失了精度。
+
+---
+
+### `new`操作符
+
+1. 实现
+
+   ```js
+   function myNew(){
+       let [constructor, ...args] = [...arguments] //获取构造函数和参数
+       let obj = {} //创建对象
+       obj.__proto__ = constructor.prototype //实例的隐式原型指向构造函数的显示原型
+       let ret = constructor.call(obj, ...args) //执行构造函数
+       return typeof ret === 'object' ? ret || obj : obj //根据返回值类型确定对象的值
+   }
+   ```
+
+---
+
+### 事件循环机制（Event Loop）
+
+![](assets/事件循环.png)
+
+1. 宏任务和微任务（异步任务的优先级）
+
+   **微任务永远在宏任务之前执行**
+
+   - 宏任务
+     - `setTimeout`
+     - `setInterval`
+   - 微任务
+     - `Promise`
+     - `MutationObserver`
+
+   ```js
+   setTimeout(function () {
+       console.log(1);
+   });
+   
+   new Promise(function(resolve,reject){
+       console.log(2)
+       resolve(3)
+   }).then(function(val){
+       console.log(val);
+   })
+   //2, 3, 1
+   ```
+
+2. `node`中的事件循环机制
+
+   ```text
+    ┌───────────────────────┐
+   ┌─>│        timers         │
+   │  └──────────┬────────────┘
+   │  ┌──────────┴────────────┐
+   │  │     I/O callbacks     │
+   │  └──────────┬────────────┘
+   │  ┌──────────┴────────────┐
+   │  │     idle, prepare     │
+   │  └──────────┬────────────┘      ┌───────────────┐
+   │  ┌──────────┴────────────┐      │   incoming:   │
+   │  │         poll          │<──connections───     │
+   │  └──────────┬────────────┘      │   data, etc.  │
+   │  ┌──────────┴────────────┐      └───────────────┘
+   │  │        check          │
+   │  └──────────┬────────────┘
+   │  ┌──────────┴────────────┐
+   └──┤    close callbacks    │
+      └───────────────────────┘
+   ```
+
+   - timers: 这个阶段执行定时器队列中的回调如 `setTimeout()` 和 `setInterval()`。
+   - I/O callbacks: 这个阶段执行几乎所有的回调。但是不包括close事件，定时器和`setImmediate()`的回调。
+   - idle, prepare: 这个阶段仅在内部使用，可以不必理会。
+   - poll: 等待新的I/O事件，node在一些特殊情况下会阻塞在这里。
+   - check: `setImmediate()`的回调会在这个阶段执行。
+   - close callbacks: 例如`socket.on('close', ...)`这种close事件的回调。
+   - **注意**：在一个I/O事件的回调中，`setImmediate()`会先于`setTimeout()` 。一般情况下 `setTimeout()`会先于`setImmediate()`
+
+3. 面试题
+
+   ```js
+   async function async1 ()  {
+       console.log('async1 start');
+       await async2();
+       console.log('async1 end')
+   }
+   async function async2 ()  {
+       console.log('async2')
+   }
+   console.log('script start');
+   setTimeout(function (){
+       console.log('setTimeout')
+   }, 0);
+   async1();
+   new Promise(function (resolve)  {
+       console.log('promise1');
+       resolve()
+   }).then(function ()  {
+      	console.log('promise2')
+   });
+   console.log('script end')
+   //script start => async1 start => async2 => promise1 => script end => async1 end => promise2 => setTimeout
+   ```
+
+   ```js
+   console.log(111);
+   let p1 = new Promise(resolve => {
+     setTimeout(() => {
+       console.log(222);
+       resolve();  // 注意resolve位置的区别
+       Promise.resolve().then(() => {
+         console.log(333);
+       });
+     }, 0);
+   });
+   p1.then(() => {
+     new Promise(resolve => {
+       console.log(444);
+       resolve();
+     }).then(()=>console.log(555))
+   }).then(()=>console.log(666))
+   console.log(777)
+   //111 => 777 => 222 => 444 => 333 => 555 => 666
+   ```
+
+   ```js
+   console.log(111);
+   let p1 = new Promise(resolve => {
+     setTimeout(() => {
+       console.log(222);
+       Promise.resolve().then(() => {
+         console.log(333);
+       });
+       resolve(); // 注意resolve位置的区别
+     }, 0);
+   });
+   p1.then(() => {
+     new Promise(resolve => {
+       console.log(444);
+       resolve();
+     }).then(()=>console.log(555))
+   }).then(()=>console.log(666))
+   console.log(777)
+   //111 => 777 => 222 => 333 => 444 => 555 => 666
+   ```
+
+---
+
+### `Promise`原理
+
+详见`Promise.md`
+
+---
+
+### generator原理
+
+1. Generators 允许我们在函数执行过程中暂停、并在将来某一时刻恢复执行。这一特性改变了以往函数必须执行完成才返回的特点，将这一特性应用到异步代码编写中，可以有效的简化异步方法的写法，同时避免陷入回调地狱。
+
+   ```js
+   function* example() {
+    yield 1;
+    yield 2;
+    yield 3;
+   }
+   
+   var iter=example();
+   iter.next();//{value:1，done:false}
+   iter.next();//{value:2，done:false}
+   iter.next();//{value:3，done:false}
+   iter.next();//{value:undefined，done:true}
+   ```
+   
+2. 和`async/await`的区别
+
+   `async/await` 是用来解决异步的，`async`函数是`Generator`函数的语法糖
+   使用关键字`async`来表示，在函数内部使用 `await` 来表示异步
+   `async`函数返回一个` Promise` 对象，可以使用`then`方法添加回调函数
+   当函数执行的时候，一旦遇到`await`就会先返回，等到异步操作完成，再接着执行函数体内后面的语句
+   `async`较`Generator`的优势：
+
+   - 内置执行器。`Generator` 函数的执行必须依靠执行器，而 `Aysnc` 函数自带执行器，调用方式跟普通函数的调用一样
+   - 更好的语义。`async` 和 `await` 相较于 `*` 和` yield` 更加语义化　　
+   - 更广的适用性。`yield`命令后面只能是` Thunk` 函数或 `Promise`对象，`async`函数的`await`后面可以是`Promise`也可以是原始类型的值
+   - 返回值是 `Promise`。`async` 函数返回的是` Promise` 对象，比`Generator`函数返回的`Iterator`对象方便，可以直接使用`then()`方法进行调用
+
+---
+
+## `CSS`
+
+### 盒模型
+
+1. 示意图
+
+   ![](assets/盒模型.png)
+
+2. IE模型和标准模型
+
+   - IE模型：`width = content + padding + border`
+
+     ![](assets/IE模型.png)
+
+   - 标准模型：`width = content`
+
+     ![](assets/标准模型.png)
+
+3. `box-sizing: content-box & border-box`:
+
+   ```css
+   .content-box {
+     box-sizing:content-box;
+     width: 100px;
+     height: 50px;
+     padding: 10px;
+     border: 5px solid red;
+     margin: 15px;
+   }
+   ```
+
+   ![](assets/content-box.png)
+
+   ```css
+   .border-box {
+     box-sizing: border-box;
+     width: 100px;
+     height: 50px;
+     padding: 10px;
+     border: 5px solid red;
+     margin: 15px;
+   }
+   ```
+
+   ![](assets/border-box.png)
+
+4. 外边距重叠
+
+   - **普通文档流**的**垂直**方向（相当于body里面）上的两个盒模型的外边距会发生重叠，并取**绝对值最大**的那个(一正一负的话，就加起来)
+
+     ![](assets/外边距重叠.png)
+
+---
+
+### BFC
+
+1. 特性：
+
+   - 同一个 BFC 下外边距会发生折叠
+   - BFC 可以包含浮动的元素（清除浮动，解决高度塌陷的问题）
+   - BFC 可以阻止元素被浮动元素覆盖（实现两栏自适应布局）
+
+2. 具有 BFC 特性的元素可以看作是隔离了的独立容器，容器里面的元素不会在布局上影响到外面的元素，并且 BFC 具有普通容器所没有的一些特性。
+
+3. 只要元素满足下面任一条件即可触发 BFC 特性：
+
+   - body 根元素
+
+   - 浮动元素：float 除 none 以外的值
+
+   - 绝对定位元素：position (absolute、fixed)
+
+   - display 为 inline-block、table-cells、flex
+
+   - overflow 除了 visible 以外的值 (hidden、auto、scroll)
+
+---
+
+### CSS选择器
+
+1. 类别
+
+   * `简单选择器（Simple selectors）`：通过元素类型、class 或 id 匹配一个或多个元素。
+   * `属性选择器（Attribute selectors）`：通过 属性 / 属性值 匹配一个或多个元素。
+     - `[attr]`：该选择器选择包含 attr 属性的所有元素，不论 attr 的值为何。
+     - `[attr=val]`：该选择器仅选择 attr 属性被赋值为 val 的所有元素。
+     - `[attr~=val]`：该选择器仅选择 attr 属性的值（以空格间隔出多个值）中有包含 val 值的所有元素，比如位于被空格分隔的多个类（class）中的一个类。
+   * `伪类（Pseudo-classes）`：匹配处于确定状态的一个或多个元素，比如被鼠标指针悬停的元素，或当前被选中或未选中的复选框，或元素是 DOM 树中一父节点的第一个子节点。
+   * `伪元素（Pseudo-elements）`:匹配处于相关的确定位置的一个或多个元素，例如每个段落的第一个字，或者某个元素之前生成的内容。
+   * `组合器（Combinators）`：这里不仅仅是选择器本身，还有以有效的方式组合两个或更多的选择器用于非常特定的选择的方法。例如，你可以只选择 divs 的直系子节点的段落，或者直接跟在 headings 后面的段落。
+   * `多用选择器（Multiple selectors）`：这些也不是单独的选择器；这个思路是将以逗号分隔开的多个选择器放在一个 CSS 规则下面， 以将一组声明应用于由这些选择器选择的所有元素。
+
+2. 组合器
+
+   | Combinators | Select                    |
+   | ----------- | ------------------------- |
+   | A, B        | 满足A（和/或）B的任意元素 |
+   | A B         | B是A的后代节点            |
+   | A > B       | B是A的直接字节点          |
+   | A + B       | B是A的下一个兄弟节点      |
+   | A ~ B       | B是A的后面的兄弟节点      |
+
+3. 加载顺序
+
+   >**加载顺序一般是**： （外部样式）External style sheet <（内部样式）Internal style sheet <（内联样式）Inline style 
+   >**有种特殊情况**： 就是如果外部样式放在内部样式的后面，则外部样式将覆盖内部样式。
+
+4. 优先级
+
+   >*说明：优先级主要是针对不同的选择方式来说的*。 
+   >内联样式表的权值 > ID 选择器的权值 > Class 类选择器的权值 > HTML 标签选择器的权值 
+   >可以在属性最后添加`!important`，申明最大优先级
+   >
+   >- 样式重复时，在权值相同的情况下后面的会覆盖前面的
+   >- 如果`!important`被用于一个简写的样式属性，那么这条简写的样式属性所代表的子属性都会被作用上`!important`。
+   >- 内联样式的优先级并不一定比外联样式高，因为css样式是单线程，依次从上向下加载的，这也就证明了**内联样式和外联样式的优先级和加载顺序有关**。
+   >- 就近原则
+   >
+   >**总之，越具体优先级越大**
+
+---
+
+### `position`
+
+1. `static`
+   - 每个元素的默认值——将元素放入文档布局流中的正常位置
+2. `relative`
+   - 以原来位置的左上角为原点，相对移动
+3. `absolute`
+   - 绝对定位的元素不再存在于正常文档布局流中。它自己的层独立于一切。这意味着我们可以创建不干扰页面上其他元素的位置的隔离的UI功能 。例如，弹出信息框和控制菜单；翻转面板；可以在页面上的任何地方拖放的UI功能。
+   - 定位是相对于离元素**最近的设置了绝对或相对定位的**父元素决定的，如果没有父元素设置绝对或相对定位，则元素相对于**根元素即html元素**定位。
+4. `fixed`
+   - 固定定位固定元素则是相对于浏览器视口本身。 可以创建固定的有用的UI项目，如持久导航菜单。
+5. `sticky`
+   - 是相对位置和固定位置的混合体，它允许被定位的元素表现得像相对定位一样，直到它滚动到某个阈值点（例如，从视口顶部起10像素）为止，此后它就变得固定了
+
+### `Flex`布局
+
+1. 两根轴线（`flexbox`的特性是沿着主轴或者交叉轴对齐之中的元素）
+   - 主轴（`flex-direction`）
+     - `row`（从左向右）
+     - `row-reverse`（从右向左）
+     - `column`（从上到下）
+     - `column-reverse`（从下到上）
+   - 交叉轴：垂直于主轴
+   
+2. 起始线和终止线
+   - 如果主轴方向是`row`的话，起始线是左边，终止线是右边
+     - 如果主轴方向是`row-reverse`的话，起始线是右边，终止线是左边
+   
+3. 开启`flex`布局：`display: flex/inline-flex`(`flex`高度自适应，宽度100%；`inline-flex`宽高都是自适应)
+
+4. 容器里面的元素有以下性质：
+   * 元素排列为一行 (`flex-direction` 属性的初始值是 `row`)。
+   * 元素从主轴的起始线开始。
+   * 元素不会在主维度方向（**横**）拉伸，但是可以缩小。
+   * 元素被拉伸来填充交叉轴大小（**竖**）。
+   * `flex-basis`属性为 `auto`。
+   * `flex-wrap`（元素能否换行显示）属性为 `nowrap`。
+   
+5. flex元素上的属性
+
+   - `flex-grow`：`flex-grow` 若被赋值为一个正整数， flex 元素会以 `flex-basis` 为基础，沿主轴方向增长尺寸。这会使该元素延展，并占据此方向轴上的可用空间（available space）。如果有其他元素也被允许延展，那么他们会各自占据可用空间的一部分。（例：`a`的`flex-grow`为a，`b`的`flex-grow`为b，`c`的flex-grow为c，那么`a`占空间`a/(a + b + c)` ）
+
+     ---
+
+   - `flex-shrink`：处理flex元素收缩的问题。如果我们的容器中没有足够排列flex元素的空间，那么可以把flex元素`flex-shrink`属性设置为正整数来缩小它所占空间到`flex-basis`以下。与`flex-grow`属性一样，可以赋予不同的值来控制flex元素收缩的程度 —— 给`flex-shrink`属性赋予更大的数值可以比赋予小数值的同级元素收缩程度更大。在计算`flex`元素收缩的大小时，它的最小尺寸也会被考虑进去，就是说实际上`flex-shrink`属性可能会和`flex-grow`属性表现的不一致。
+
+     ---
+
+   - `flex-basis`：元素的空间大小。浏览器会检测这个元素是否具有确定的尺寸。 如果所有元素都设定了宽度（width）为100px，那么 `flex-basis` 的值为100px。如果没有给元素设定尺寸，`flex-basis` 的值采用*元素*内容的尺寸。这就解释了：我们给只要给Flex元素的父元素声明 `display: flex` ，所有子元素就会排成一行，且自动分配小大以充分展示元素的内容。
+
+     ---
+
+6. `flex`属性的简写
+
+   **`flex:flex-grow flex-shrink flex-basis`**
+
+   * `flex: initial`是把flex元素重置为Flexbox的初始值，它相当于 `flex: 0 1 auto`
+   * `flex: auto`等同于 `flex: 1 1 auto`
+   * `flex: none`可以把flex元素设置为不可伸缩。它和设置为 `flex: 0 0 auto` 是一样的
+   * `flex: <positive-number>`:`flex: 1` 相当于`flex: 1 1 0`。元素可以在`flex-basis`为0的基础上伸缩。
+
+7. 元素的对齐和空间分配
+
+   - `align-items`：使元素在交叉轴方向对齐
+
+     - `stretch`：默认拉伸到最高元素的高度
+     - `felx-start`：按顶部对齐
+     - `flex-end`：按底部对齐
+     - `center`：居中对齐
+
+   - `justify-content`：使元素在主轴方向对齐
+
+     - `flex-start`：默认值，靠起始线排列
+
+     - `flex-end`：靠终止线排列
+
+     - `center`：居中排列
+
+     - `space-aroud`：每个元素周围都有相同间距（包括元素和终止线/起始线之间）
+
+       ![截屏2021-03-14 19.57.09](assets/space-around.png)
+
+     - `space-between`：每个元素之间有相同的间距（不包括元素和终止线/起始线之间）
+
+       ![截屏2021-03-14 19.58.13](assets/space-between.png)
+
+---
+
+### 双飞翼布局&圣杯布局
+
+![](assets/布局.png)
+
+1. 双飞翼布局
+
+   
 
