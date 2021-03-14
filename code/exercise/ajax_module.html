@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>MyPromise for ajax</h2>
+        <hr>
+        <button class="btn btn-primary" id="btn">Click here for an ajax request</button>
+    </div>
+    <script type="text/javascript">
+        const btn = document.querySelector('#btn')
+        btn.addEventListener('click', function (){
+            const p = new Promise((resolve, reject) => {
+                //发送ajax请求
+                const xhr = new XMLHttpRequest()
+                xhr.open('GET', 'https://api.apiopen.top/getJoke')
+                xhr.send()
+                xhr.onreadystatechange = function (){
+                    if (xhr.readyState === 4){
+                        if (xhr.status >= 200 && xhr.status < 300) resolve(xhr.response)
+                        else reject(xhr.status)
+                    }
+                }
+            }).then(value => console.log(value), reason => console.log(reason))
+        })
+    </script>
+</body>
+</html>

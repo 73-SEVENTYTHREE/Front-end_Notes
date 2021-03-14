@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2>MyPromise for first</h2>
+        <hr>
+        <button class="btn btn-primary" id="btn">Click here for a lottery draw</button>
+    </div>
+    <script type="text/javascript">
+        //生成随机数
+        function rand(m, n){
+            return Math.ceil(Math.random() * (n - m + 1)) + m -1
+        }
+        const btn = document.querySelector('#btn')
+        btn.addEventListener('click', function (){
+            // setTimeout(() => {
+            //     let n = rand(1, 100)
+            //     if (n <= 30) alert('Congratulations!')
+            //     else alert('Sorry!')
+            // }, 1000)
+            //Promise实现
+            //resolve 成功时调用的函数
+            //reject 失败时调用的函数
+            const p = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    let n = rand(1, 100)
+                    if (n <= 30) resolve(n) //将promise对象的状态设置成'成功',并且可以将成功值传入函数
+                    else reject(n) //失败也可以将失败值传入函数供使用
+                }, 1000)
+            })
+            //then方法 第一个回调函数是resolve回调函数，第二个回调函数是reject回调函数
+            p.then(value => {
+                alert('Congratulations! Your number is ' + value)
+            },reason =>{
+                alert('Sorry! Your number is ' + reason)
+            })
+        })
+    </script>
+</body>
+</html>
