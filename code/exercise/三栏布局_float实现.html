@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三栏布局_float实现</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .header{
+            height: 50px;
+            background-color: cadetblue;
+        }
+        .container{
+            position: relative;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        .middle{
+            width: 100%;
+            background-color: #bfa;
+            height: 400px;
+            float: left;
+        }
+        .left{
+            float: left;
+            width: 100px;
+            height: 400px;
+            background-color: red;
+            margin-left: calc(-100% + -100px);
+        }
+        .right{
+            width: 100px;
+            height: 500px;
+            background-color: aqua;
+            float: left;
+            margin-right: -100px;
+        }
+        .footer{
+            height: 50px;
+            background-color: orange;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">header</div>
+    <div class="container">
+        <div class="middle">middle</div>
+        <div class="left">left</div>
+        <div class="right">right</div>
+    </div>
+    <div class="footer"></div>
+</body>
+</html>

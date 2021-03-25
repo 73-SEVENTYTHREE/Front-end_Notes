@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>水平垂直居中</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .parent{
+            width: 400px;
+            height: 400px;
+            background-color: orange;
+            margin: 10px;
+        }
+        .child{
+            width: 200px;
+            height: 200px;
+            background-color: #bfa;
+        }
+        #parent1{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #parent2{
+            position: relative;
+        }
+        #child2{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #parent3{
+            overflow: hidden;
+        }
+        #child3{
+            margin-top: 100px;
+            margin-left: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!--    flex布局实现水平垂直居中-->
+    <div class="parent" id="parent1">
+        <div class="child" id="child1">child1</div>
+    </div>
+    <!--    position实现水平垂直居中-->
+    <div class="parent" id="parent2">
+        <div class="child" id="child2">child2</div>
+    </div>
+    <!--    宽高已知时，计算实现水平垂直居中-->
+    <div class="parent" id="parent3">
+        <div class="child" id="child3">child3</div>
+    </div>
+</body>
+</html>

@@ -3,42 +3,39 @@
 <head>
     <meta charset="utf-8">
     <title>Sticky positioning</title>
-
+    <link rel="stylesheet" type="text/css" href="./css/reset.css">
     <style>
-        *{
-            margin: 0;
-            padding: 0;
+        body{
+            /*display: flex;*/
+            overflow: hidden;
         }
-        .container{
-            display: flex;
+        .p1{
+            /*flex: 0 0 400px;*/
+            background-color: aqua;
+            padding-bottom: 100px;
+            margin-bottom: -100px;
         }
-        .box1{
-            height: 200px;
-            flex: 0 0 100px;
+        .p3{
+            height: 100px;
+            width: 200px;
             background-color: red;
         }
-        .box2{
-            height: 400px;
-            flex: 1 1 auto;
+        .p2{
+            /*flex: 1 1 auto;*/
             background-color: #bfa;
-        }
-        .box3{
-            height: 600px;
-            flex: 0 0 100px;
-            background-color: cadetblue;
-        }
-        .footer{
-            height: 50px;
-            background-color: orange;
+            padding-bottom: 9999px;
+            margin-bottom: -9999px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="box1">1</div>
-        <div class="box2">2</div>
-        <div class="box3">3</div>
+    <div class="p1">aaaa
     </div>
-    <div class="footer"></div>
+    <div class="p3"></div>
+    <div class="p2">bbbb</div>
+    <script type="text/javascript">
+        let a = 1;
+        console.log(this.a)
+    </script>
 </body>
 </html>

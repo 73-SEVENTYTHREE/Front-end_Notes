@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三栏布局_flex实现</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .header{
+            height: 50px;
+            background-color: aqua;
+        }
+        .container{
+            display: flex;
+        }
+        .left{
+            flex: 0 0 100px;
+            background-color: red;
+            min-height: 400px;
+        }
+        .middle{
+            flex: 1 1 auto;
+            background-color: #bfa;
+            min-height: 400px;
+        }
+        .right{
+            flex: 0 0 100px;
+            background-color: orange;
+            min-height: 400px;
+        }
+        .footer{
+            min-height: 50px;
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">header</div>
+    <div class="container">
+        <div class="left">left</div>
+        <div class="middle">middle</div>
+        <div class="right">right</div>
+    </div>
+    <div class="footer">footer</div>
+</body>
+</html>

@@ -201,7 +201,7 @@ class Promise{
             //修改结果值 PromiseResult
             this.PromiseResult = value
             //使用定时器是为了让then()里的任务异步执行
-            setTimeout(() =>{
+            setTimeout(() => {
                //如果executor里的是异步任务，则先通过then()拿到callbacks里中保存的函数，再执行
                 this.callbacks.forEach(item =>{
                     if (item.onResolved) item.onResolved(this.PromiseResult)

@@ -106,11 +106,12 @@ class MyPromise {
         return new MyPromise((resolve, reject) => {
             let successNum = 0
             let successResults = []
+            int len = promises.length;
             promises.forEach((item, index) =>{
                 item.then(value => {
                     successNum++
                     successResults[index] = value
-                    if (successNum === promises.length){
+                    if (successNum === len){
                         resolve(successResults)
                     }
                 }, reason => {

@@ -1426,6 +1426,65 @@ Function.prototype.bind2 = function (context) {
 
 ## `CSS`
 
+### 长度单位
+
+#### 相对长度
+
+| 单位 | 描述                                                         |
+| ---- | ------------------------------------------------------------ |
+| em   | 相对于当前元素字体的尺寸，一般浏览器的字体大小默认为16px，则2em = 32px。 |
+| ex   | 依赖于英文字母`x`的高度                                      |
+| ch   | 数字`0`的宽度                                                |
+| rem  | `root em`，作用于非根元素时，**相对于根元素字体大小**；作用于根元素时，相对于初始字体大小。（根元素 = 2rem（32px），非根元素 = 2rem（64px）） |
+| vw   | `viewpoint width`，视窗宽度，1vw = 视窗宽度的1%              |
+| vh   | `viewpoint height`，视窗高度，1vh = 视窗高度的1%             |
+| vmin | `vw`和`vh`中较小的那个                                       |
+| vmax | `vw`和`vh`中较大的那个                                       |
+| %    | 父元素的百分比                                               |
+
+#### 绝对长度
+
+| 单位 | 描述                            |
+| ---- | ------------------------------- |
+| cm   | 厘米                            |
+| mm   | 毫米                            |
+| in   | 英寸（1 in = 96 px = 2.54 cm ） |
+| px   | 像素                            |
+| pt   | point，1 pt = 1/72 in           |
+| pc   | pica，1 pc = 1/6 in             |
+
+#### 半个像素点问题
+
+实现0.5px的边框
+
+1. `transform`
+
+   ```css
+   //将宽高和字体大小变成原来的两倍，再整体以左上角为原点缩放0.5倍
+   .box1{
+     font-size: 2em;
+     width: 400px;
+     height: 400px;
+     border: 1px solid red;
+     transform: scale(0.5);
+     transform-origin: 0 0;
+   }
+   ```
+
+   
+
+2. `gradient`
+
+   ```css
+   .box1{
+     width: 200px;
+     height: 1px;
+     background: linear-gradient(#fff 50%, #000 50%);
+   }
+   ```
+
+---
+
 ### 盒模型
 
 1. 示意图
@@ -1512,7 +1571,7 @@ Function.prototype.bind2 = function (context) {
      - `[attr=val]`：该选择器仅选择 attr 属性被赋值为 val 的所有元素。
      - `[attr~=val]`：该选择器仅选择 attr 属性的值（以空格间隔出多个值）中有包含 val 值的所有元素，比如位于被空格分隔的多个类（class）中的一个类。
    * `伪类（Pseudo-classes）`：匹配处于确定状态的一个或多个元素，比如被鼠标指针悬停的元素，或当前被选中或未选中的复选框，或元素是 DOM 树中一父节点的第一个子节点。
-   * `伪元素（Pseudo-elements）`:匹配处于相关的确定位置的一个或多个元素，例如每个段落的第一个字，或者某个元素之前生成的内容。
+   * `伪元素（Pseudo-elements）`:匹配处于相关的确定位置的一个或多个元素，例如每个段落的第一个字，或者某个元素之前生成的内容。（*伪类和伪元素的区别就是伪类操纵的是文档树中已有的元素，而伪元素是创建了一个文档树以外的元素。*）
    * `组合器（Combinators）`：这里不仅仅是选择器本身，还有以有效的方式组合两个或更多的选择器用于非常特定的选择的方法。例如，你可以只选择 divs 的直系子节点的段落，或者直接跟在 headings 后面的段落。
    * `多用选择器（Multiple selectors）`：这些也不是单独的选择器；这个思路是将以逗号分隔开的多个选择器放在一个 CSS 规则下面， 以将一组声明应用于由这些选择器选择的所有元素。
 
@@ -1638,7 +1697,395 @@ Function.prototype.bind2 = function (context) {
 
 ![](assets/布局.png)
 
-1. 双飞翼布局
+​		两个都是三栏布局，两边宽度固定，中间栏宽度自适应
 
+1. `float`实现
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>三栏布局_float实现</title>
+       <style>
+           *{
+               margin: 0;
+               padding: 0;
+           }
+           .header{
+               height: 50px;
+               background-color: cadetblue;
+           }
+           .container{
+               position: relative;
+               padding-left: 100px;
+               padding-right: 100px;
+           }
+           .middle{
+               width: 100%;
+               background-color: #bfa;
+               height: 400px;
+               float: left;
+           }
+           .left{
+               float: left;
+               width: 100px;
+               height: 400px;
+               background-color: red;
+               margin-left: calc(-100% + -100px);
+           }
+           .right{
+               width: 100px;
+               height: 500px;
+               background-color: aqua;
+               float: left;
+               margin-right: -100px;
+           }
+           .footer{
+               height: 50px;
+               background-color: orange;
+               clear: both;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="header">header</div>
+       <div class="container">
+           <div class="middle">middle</div>
+           <div class="left">left</div>
+           <div class="right">right</div>
+       </div>
+       <div class="footer"></div>
+   </body>
+   </html>
+   ```
+
+2. `flex`实现
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>三栏布局_flex实现</title>
+       <style>
+           *{
+               margin: 0;
+               padding: 0;
+           }
+           .header{
+               height: 50px;
+               background-color: aqua;
+           }
+           .container{
+               display: flex;
+           }
+           .left{
+               flex: 0 0 100px;
+               background-color: red;
+               min-height: 400px;
+           }
+           .middle{
+               flex: 1 1 auto;
+               background-color: #bfa;
+               min-height: 400px;
+           }
+           .right{
+               flex: 0 0 100px;
+               background-color: orange;
+               min-height: 400px;
+           }
+           .footer{
+               min-height: 50px;
+               background-color: antiquewhite;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="header">header</div>
+       <div class="container">
+           <div class="left">left</div>
+           <div class="middle">middle</div>
+           <div class="right">right</div>
+       </div>
+       <div class="footer">footer</div>
+   </body>
+   </html>
+   ```
+
+---
+
+### 垂直居中实现
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>水平垂直居中</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .parent{
+            width: 400px;
+            height: 400px;
+            background-color: orange;
+            margin: 10px;
+        }
+        .child{
+            width: 200px;
+            height: 200px;
+            background-color: #bfa;
+        }
+        #parent1{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #parent2{
+            position: relative;
+        }
+        #child2{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #parent3{
+            overflow: hidden;
+        }
+        #child3{
+            margin-top: 100px;
+            margin-left: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!--    flex布局实现水平垂直居中-->
+    <div class="parent" id="parent1">
+        <div class="child" id="child1">child1</div>
+    </div>
+    <!--    position实现水平垂直居中-->
+    <div class="parent" id="parent2">
+        <div class="child" id="child2">child2</div>
+    </div>
+    <!--    宽高已知时，计算实现水平垂直居中-->
+    <div class="parent" id="parent3">
+        <div class="child" id="child3">child3</div>
+    </div>
+</body>
+</html>
+```
+
+---
+
+### `CSS3`新特性
+
+#### 过渡
+
+1. 语法：`transition: CSS属性, 花费时间，效果曲线（默认ease），延迟时间（默认0）`
+
+   ```css
+   /*宽度从原始值到指定值的一个过渡，运动曲线ease,运动时间0.5秒，0.2秒后执行过渡*/
+   transition：width,.5s,ease,.2s
+   ```
+
+   ```css
+   /*所有属性从原始值到指定值的一个过渡，运动曲线ease,运动时间0.5秒*/
+   transition：all,.5s
+   ```
+
+2. 下拉菜单实现
+
+   ```html
+   //html部分
+   <ul class="menu">
+     <li class="child">
+       <a href="#">html</a>
+       <ul class="child_menu">
+         <li class="item">111</li>
+         <li class="item">222</li>
+       </ul>
+     </li>
+     <li class="child">
+       <a href="#">html</a>
+       <ul class="child_menu">
+         <li class="item">111</li>
+         <li class="item">222</li>
+       </ul>
+     </li>
+     <li class="child">
+       <a href="#">html</a>
+       <ul class="child_menu">
+         <li class="item">111</li>
+         <li class="item">222</li>
+       </ul>
+     </li>
+   </ul>
    
+   //css部分
+   <style>
+     .menu{
+       height: 50px;
+       background-color: aqua;
+       display: flex;
+     }
+     .child{
+       flex: 1;
+       position: relative;
+       background-color: antiquewhite;
+       justify-content: space-between;
+     }
+     .child_menu{
+       transform: scaleY(0);
+       transform-origin: 0 0;
+       position: absolute;
+       width: 100%;
+       top: 50px;
+       left: 0;
+       transition: all .5s;
+       background-color: #bfa;
+     }
+     .item{
+       background-color: orange;
+     }
+     .child:hover .child_menu{
+       transform: scaleY(1);
+     }
+     a{
+       display: block;
+       line-height: 50px;
+       text-align: center;
+     }
+   </style>
+   ```
+
+#### 动画
+
+1. 语法：`animation：动画名称，一个周期花费时间，运动曲线（默认ease），动画延迟（默认0），播放次数（默认1），是否反向播放动画（默认normal），是否暂停动画（默认running）`
+
+2. 方块来回移动
+
+   ```css
+   @keyframes to_circle {
+     0% {left: 0}
+     100% {left: calc(100% - 400px)}
+   }
+   .box1{
+     width: 400px;
+     height: 400px;
+     animation: to_circle 3s infinite alternate;
+     background-color: #bfa;
+     position: relative;
+   }
+   ```
+
+#### 形状转换
+
+1. 语法：
+   - `transform:适用于2D或3D转换的元素`
+   - `transform-origin：转换元素的位置（围绕那个点进行转换）。默认(x,y,z)：(50%,50%,0)`
+
+#### 选择器
+
+![](assets/css3选择器.webp)
+
+#### 阴影
+
+1. 语法：`box-shadow: 水平阴影的位置 垂直阴影的位置 模糊距离 阴影的大小 阴影的颜色 阴影开始方向（默认是从里往外，设置inset就是从外往里）`
+
+#### 颜色
+
+1. `rgba`
+2. `hsla`（不会影响后代元素）
+
+---
+
+### `CSS`样式隔离
+
+![](assets/css模块化.png)
+
+----
+
+### `CSS`性能优化
+
+> 1. 合并css文件，如果页面加载10个css文件,每个文件1k，那么也要比只加载一个100k的css文件慢。
+> 2.  减少css嵌套，最好不要嵌套三层以上。
+> 3. 不要在ID选择器前面进行嵌套，ID本来就是唯一的而且权限值大，嵌套完全是浪费性能。 
+> 4. 建立公共样式类，把相同样式提取出来作为公共类使用。 
+> 5. 减少通配符*或者类似[hidden="true"]这类选择器的使用，挨个查找所有...这性能能好吗？
+> 6. 巧妙运用css的继承机制，如果父节点定义了，子节点就无需定义。
+> 7. 拆分出公共css文件，对于比较大的项目可以将大部分页面的公共结构样式提取出来放到单独css文件里，这样一次下载 后就放到缓存里，当然这种做法会增加请求，具体做法应以实际情况而定。 8
+> 8. 不用css表达式，表达式只是让你的代码显得更加酷炫，但是对性能的浪费可能是超乎你想象的。 9
+> 9. 少用css rest，可能会觉得重置样式是规范，但是其实其中有很多操作是不必要不友好的，有需求有兴趣，可以选择normolize.css。 
+> 10.  cssSprite，合成所有icon图片，用宽高加上background-position的背景图方式显现icon图，这样很实用，减少了http请求。 
+> 11. 善后工作，css压缩(在线压缩工具 YUI Compressor) 
+> 12. GZIP压缩，是一种流行的文件压缩算法。
+
+---
+
+## `html`&浏览器
+
+### `Dom`树
+
+1. 定义：`DOM` 是表述 `HTML` 的内部数据结构，它会将 `Web` 页面和 `JavaScript` 脚本连接起来，并过滤一些不安全的内容
+
+
+
+## 计算机网络
+
+### OSI七层模型及每层简要功能描述
+
+![](assets/OSI.png)
+
+### TCP / IP 协议分层模型及每层常见协议
+
+![](assets/各层协议类型.png)
+
+|                      | 功能                                                         | 常见                            | 协议                                         |
+| -------------------- | ------------------------------------------------------------ | ------------------------------- | -------------------------------------------- |
+| 物理层(比特Bit)      | 设备间接收或发送比特流；说明电压、线速和线缆等。             | 中继器、网线、集线器、HUB等     | RJ45、CLOCK、IEEE802.3等                     |
+| 数据链路层(帧Frame)  | 将比特组合成字节，进而组合成帧；用MAC地址访问介质；错误可以被发现但不能被纠正。 | 网卡、网桥、二层交换机等        | PPP、FR、HDLC、VLAN、MAC等                   |
+| 网络层(数据包Packet) | 负责数据包从源到宿的传递和网际互连                           | 路由器、多层交换机、防火墙等    | IP、ICMP、ARP、PARP、OSPF、IPX、RIP、IGRP等  |
+| 运输层               | 可靠或不可靠数据传输；数据重传前的错误纠正。                 | 进程、端口（socket）            | TCP、UDP、SPX                                |
+| 会话层               | 保证不同应用程序的数据独立；建立、管理和终止会话。           | 服务器验证用户登录、断点续传    | NFS、SQL、NetBIOS、RPC                       |
+| 表示层               | 数据表示；加密与解密、数据的压缩与解压缩、图像编码与解码等特殊处理过程 | URL加密、口令加密、图片编解码等 | JPEG、MPEG、ASCII                            |
+| 应用层               | 用户接口                                                     | --                              | FTP、DNS、Telnet、SNMP、SMTP、HTTP、WWW、NFS |
+
+1. HTTP有哪些方法？
+   - Put（向服务器写入文档）
+   - Post（向服务器发送数据）
+   - Head（只发送请求头，可以先验证自己访问的数据是否存在）
+   - Delete（删除指定url的资源）
+   - Option（询问服务器支持那些http方法）
+   
+2. `GET`和`POST`区别
+   - get发送的数据直接跟在URL后面，以问号开头，参数之间使用&符分割，并且数据放在http请求头上；而post不会把数据写在url中，它是把传输的数据放在http的请求体中；
+   - get用来请求服务器的数据或资源，post一般用来操作服务器的数据，比如增加或者删除等；
+   - get用于不需要什么安全性的操作，post用于传输一些敏感信息等安全性较高的数据。
+   - get只产生一个tcp包，一次性把header和body发送给服务器，而post一般发送两个tcp包，第一次先发送请求头，服务器响应100之后，第二次才把数据发送给服务器。
+   
+3. HTTP 1.1
+
+   - 长连接(Persistent Connection)
+
+        HTTP1.1支持长连接和请求的流水线处理，在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟，在HTTP1.1中默认开启长连接keep-alive，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。HTTP1.0需要使用keep-alive参数来告知服务器端要建立一个长连接。
+
+   - 节约带宽
+
+        HTTP1.0中存在一些浪费带宽的现象，例如客户端只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能。HTTP1.1支持只发送header信息（不带任何body信息），如果服务器认为客户端有权限请求服务器，则返回100，客户端接收到100才开始把请求body发送到服务器；如果返回401，客户端就可以不用发送请求body了节约了带宽。
+
+   - HOST域
+
+        在HTTP1.0中认为每台服务器都绑定一个唯一的IP地址，因此，请求消息中的URL并没有传递主机名（hostname），HTTP1.0没有host域。随着虚拟主机技术的发展，在一台物理服务器上可以存在多个虚拟主机（Multi-homed Web Servers），并且它们共享一个IP地址。HTTP1.1的请求消息和响应消息都支持host域，且请求消息中如果没有host域会报告一个错误（400 Bad Request）。
+
+   - 缓存处理
+
+        在HTTP1.0中主要使用header里的If-Modified-Since,Expires来做为缓存判断的标准，HTTP1.1则引入了更多的缓存控制策略例如Entity tag，If-Unmodified-Since, If-Match, If-None-Match等更多可供选择的缓存头来控制缓存策略。
+
+   - 错误通知的管理
+
+        在HTTP1.1中新增了24个错误状态响应码，如409（Conflict）表示请求的资源与资源的当前状态发生冲突；410（Gone）表示服务器上的某个资源被永久性的删除
 
