@@ -12,30 +12,12 @@ function Child (name, age) {
     this.age = age;
 }
 
-Child.prototype = new Parent();//此时 Child.prototype 中的 constructor 被重写了，会导致 child1.constructor === Parent
-Child.prototype.constructor = Child;//将原型对象上的constructor指回自己
-
-
-var child1 = new Child('kevin', '18');
-function Parent (name) {
-    this.name = name;
-    this.colors = ['red', 'blue', 'green'];
-}
-
-Parent.prototype.getName = function () {
-    console.log(this.name)
-}
-
-function Child (name, age) {
-    Parent.call(this, name);
-    this.age = age;
-}
-
-Child.prototype = new Parent();//此时 Child.prototype 中的 constructor 被重写了，会导致 child1.constructor === Parent
-Child.prototype.constructor = Child;//将原型对象上的constructor指回自己
+function Fn() {}
+Fn.prototype = Parent.prototype
+Child.prototype = new Fn();
+Child.prototype.constructor = Child;
 
 var child1 = new Child('kevin', '18');
-
 child1.colors.push('black');
 
 console.log(child1.name); // kevin

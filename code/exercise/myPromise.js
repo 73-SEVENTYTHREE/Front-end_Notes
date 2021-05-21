@@ -106,7 +106,7 @@ class MyPromise {
         return new MyPromise((resolve, reject) => {
             let successNum = 0
             let successResults = []
-            int len = promises.length;
+            let len = promises.length;
             promises.forEach((item, index) =>{
                 item.then(value => {
                     successNum++
@@ -123,22 +123,15 @@ class MyPromise {
 
     static race(promises){
         return new MyPromise((resolve, reject) => {
-            for (let i = 0; i < promises.length; i++){
+            for (let i = 0, len = promises.length; i < len; i++){
                 promises[i].then(value => resolve(value),reason => reject(reason))
             }
         })
     }
 }
-
-let p1 = new MyPromise((resolve, reject) => {
-        resolve(1)
+let p = new MyPromise(resolve => {
+    setTimeout(() => {
+        resolve(3)
+    }, 3000)
 })
-console.log(p1)
-let p2 = new MyPromise((resolve, reject) => {
-    resolve(2)
-})
-console.log(p2)
-let p3 = MyPromise.all([p1, p2])
-console.log(p3)
-let p4 = MyPromise.race([p1, p2])
-console.log(p4)
+p.then(value => console.log(value))

@@ -18,10 +18,13 @@ const myReadFile = util.promisify(fs.readFile)
 //     })
 // })
 
+f = () => 1
 main = async() =>{
+    let data4 = await f()
     let data1 = await myReadFile('./resource/1.html')
     let data2 = await myReadFile('./resource/2.html')
     let data3 = await myReadFile('./resource/3.html')
-    console.log(data1 + data2 +data3)
+    console.log(data1 + data2 + data3 + data4)
 }
 main()
+console.log(222)

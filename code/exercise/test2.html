@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html{
+            height: 2000px;
+        }
+
+         .test{
+             width: 100px;
+             height: 80px;
+             /*border: 20px solid red;*/
+             background-color: red; !important;
+             padding: 20px;
+             margin: 20px;
+             box-sizing: content-box;
+         }
+    </style>
+</head>
+<body>
+<div class="test" style="background-color: aqua">
+
+</div>
+<div class="gradient">
+
+</div>
+<script>
+    function myAjax(method, url){
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open(method, url);
+            xhr.send();
+            xhr.onreadystatechange = () => {
+                if(xhr.readyState === 4){
+                    if(xhr.status >= 200 && xhr.status < 300) resolve(xhr.response);
+                    else reject(xhr.response);
+                }
+            }
+        })
+    }
+    let p = new myAjax('get', 'www.baidu.com');
+    p.then(data => console.log(data), error => console.log(error));
+</script>
+</body>
+
+</html>

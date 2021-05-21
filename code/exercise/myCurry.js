@@ -7,19 +7,16 @@ console.log(add1(1, 2)(3))
 
 
 function add2(){
-    let args = [...arguments]
-
-    function adder(){
+    let args = arguments
+    let adder = function (){
         args = [...args, ...arguments]
         return adder
     }
-
-    adder.toString = () => {
-        let sum = 0;
-        args.forEach(item => sum += item)
-        return sum.toString()
+    adder.sumOf = () => {
+        total = args.reduce((pre, cur) => pre + cur)
+        console.log(total)
     }
     return adder
 }
 
-console.log(add2(1)(2,3,4)(5) == 15)
+add2(1)(2,3,4)(5).sumOf()

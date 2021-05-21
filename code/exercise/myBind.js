@@ -1,14 +1,13 @@
-Function.prototype.myBind = function (obj){
+Function.prototype.myBind = function (){
     let self = this
-    let [o, ...args] = [...arguments]
-    function fNOP() {}
-    function fBound(){
-        let bindArgs = [...arguments]
-        return self.apply(this instanceof fNOP?this:obj, args.concat(bindArgs))
+    let [obj, ...args] = [...arguments]
+    function f1() {}
+    function f2(){
+        return self.apply(this instanceof f2 ? this : obj, [...args, ...arguments])
     }
-    fNOP.prototype = this.prototype
-    fBound.prototype = new fNOP()
-    return fBound
+    f1.prototype = this.prototype
+    f2.prototype = new f1()
+    return f2
 }
 
 function test(a, b, c){
@@ -21,4 +20,5 @@ let obj = {
 
 let p = test.myBind(obj, 1, 2)
 let q = new p(1)
+p(1)
 console.log(q)

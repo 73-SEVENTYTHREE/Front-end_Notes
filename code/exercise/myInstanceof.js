@@ -1,15 +1,21 @@
 function myInstanceof(leftValue, rightValue){
-    if (leftValue === undefined || null) return false
-    if (typeof leftValue !== 'object' && typeof leftValue !== 'function') return false
-    let prototype = rightValue.prototype
-    let proto = leftValue.__proto__
-    while (true){
-        if (proto === null) return false
-        if (proto === prototype) return true
-        proto = proto.__proto__
+    if(leftValue === null || leftValue === undefined){
+        throw "wrong input";
     }
+    if(typeof leftValue !== 'object' && typeof leftValue !== 'function'){
+        throw "wrong input";
+    }
+    let proto = leftValue.__proto__;
+    let prototype = rightValue.prototype;
+    while(true){
+        if(proto === prototype) return true;
+        if(proto === null) break;
+        proto = proto.__proto__;
+    }
+    return false;
 }
-
-function Test(){}
-let t = new Test()
-console.log(myInstanceof(t, Function))
+let Test = function (){
+    this.a = 1;
+}
+let temp = new Test();
+console.log(myInstanceof(temp, Function))

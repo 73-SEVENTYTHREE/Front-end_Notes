@@ -830,7 +830,7 @@ function deepObj(obj){
        this.user = 'user';  
        return {};  
    }
-   var a = new fn;  
+   var a = new fn();  
    console.log(a.user); //undefined
    ```
 
@@ -840,7 +840,7 @@ function deepObj(obj){
        this.user = 'user';  
        return undefined;
    }
-   var a = new fn;  
+   var a = new fn();  
    console.log(a.user); //user
    ```
 
@@ -850,7 +850,7 @@ function deepObj(obj){
        this.user = 'user';  
        return null;
    }
-   var a = new fn;  
+   var a = new fn();  
    console.log(a.user); //user
    ```
 
@@ -1185,7 +1185,7 @@ Function.prototype.bind2 = function (context) {
 
    2012年之前浏览器使用的是`引用计数`的算法(没有引用指向的对象，就会被回收)，但是这种算法无法解决循环引用(`a.b1 = b; b.a1 = a`)的问题，所以后来采用新的算法`Mark-Sweep(标记清除)`和`Mark-Compact(标记整理)`来进行管理。
 
-   - `Mark_Sweep`（标记清楚）
+   - `Mark_Sweep`（标记清除）
 
      分为`标记`和`清除`两个阶段，在标记阶段会遍历堆中的所有对象，然后标记活着的对象，在清除阶段中，会将死亡的对象进行清除。`Mark-Sweep`算法主要是通过判断某个对象是否可以被访问到，从而知道该对象是否应该被回收，具体步骤如下：
 
@@ -1549,7 +1549,7 @@ Function.prototype.bind2 = function (context) {
 
 3. 只要元素满足下面任一条件即可触发 BFC 特性：
 
-   - body 根元素
+   - 根元素
 
    - 浮动元素：float 除 none 以外的值
 
